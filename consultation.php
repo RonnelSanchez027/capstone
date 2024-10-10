@@ -163,7 +163,6 @@ $appointmentsResult = mysqli_query($connection, $appointmentsQuery);
         <div class="submenu" id="trackingMenu">
             <div class="submenu-item" onclick="location.href='records.php'"><i class="fas fa-user-clock"></i>Consultation Records</div>
             <div class="submenu-item" onclick="location.href='tracking.php'"><i class="fas fa-user-clock"></i>Status Tracking</div>
-            <div class="submenu-item" onclick="location.href='#client-feedback'"><i class="fas fa-user-clock"></i>Client Feedback</div>
         </div>
     </div>
     <div class="menu-item">
@@ -174,9 +173,7 @@ $appointmentsResult = mysqli_query($connection, $appointmentsQuery);
             </div>
         </a>
         <div class="submenu" id="userMenu">
-            <div class="submenu-item" onclick="location.href='#user-registration'"><i class="fas fa-user-clock"></i>User Registration</div>
-            <div class="submenu-item" onclick="location.href='rolex.php'"><i class="fas fa-user-clock"></i>Role Assignment</div>
-            <div class="submenu-item" onclick="location.href='#profile-management'"><i class="fas fa-user-clock"></i>Profile Management</div>
+            <div class="submenu-item" onclick="location.href='roles.php'"><i class="fas fa-user-clock"></i>Role Assignment</div>
         </div>
     </div>
     <div class="menu-item">
@@ -189,7 +186,6 @@ $appointmentsResult = mysqli_query($connection, $appointmentsQuery);
         <div class="submenu" id="reportMenu">
             <div class="submenu-item" onclick="location.href='report.html'"><i class="fas fa-user-clock"></i>Consultation Reports</div>
             <div class="submenu-item" onclick="location.href='analytics.html'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
-            <div class="submenu-item" onclick="location.href='#export-reports'"><i class="fas fa-user-clock"></i>Export & Share Reports</div>
         </div>
     </div>
 </div>
