@@ -1,0 +1,7 @@
+Array
+(
+    [date] => 2024-10-06
+    [time] => 00:52
+    [venue] => asd
+    [topic] => asd
+)

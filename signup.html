@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Sign Up</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1000px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .image-section {
+            flex: 60%;
+            background-image: url('pc1.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .form-section {
+            flex: 40%;
+            padding: 40px;
+            background: white;
+            position: relative;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .image-section {
+                display: none; /* Hide the image section on mobile */
+            }
+            .form-section {
+                padding: 20px;
+                background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent */
+            }
+            body {
+                background-image: url('pc1.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="image-section"></div>
+    <div class="form-section">
+        <h2>Create Account</h2>
+        <form action="signup.php" method="post"> <!-- Updated form action -->
+            <div class="form-group">
+                <input type="text" class="form-control" name="username" placeholder="Username" required> <!-- Added name attribute -->
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" name="email" placeholder="Email" required> <!-- Added name attribute -->
+            </div>
+            <div class="form-group position-relative">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required> <!-- Added name attribute -->
+                <span class="toggle-password" toggle="#password">
+                    <i class="fas fa-eye-slash" id="toggle-icon"></i>
+                </span>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" name="confirm_password" placeholder="Confirm Password" required> <!-- Added name attribute -->
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-3">Sign Up</button>
+        </form>
+        <p class="mt-3">Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(".toggle-password").click(function() {
+            const passwordField = $(this).prev();
+            const icon = $(this).find("i");
+            if (passwordField.attr("type") === "password") {
+                passwordField.attr("type", "text");
+                icon.removeClass("fa-eye-slash").addClass("fa-eye");
+            } else {
+                passwordField.attr("type", "password");
+                icon.removeClass("fa-eye").addClass("fa-eye-slash");
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+:root {
+    --text: #0b0c18;
+    --background: #e8e9f7;
+    --primary: #191d67;
+    --secondary: #757be6;
+    --accent: #141db8;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background);
+    margin-top: 80px; /* Space for the fixed taskbar */
+    color: var(--text);
+}
+
+.taskbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    height: 60px;
+}
+
+.taskbar-icon {
+    font-size: 28px;
+    margin: 0 20px;
+    cursor: pointer;
+    color: var(--primary);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Hide off-screen */
+    width: 300px; /* Increased width */
+    height: 100vh;
+    background-color: #fff;
+    border-radius: 0 15px 15px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 1100;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.sidebar.open {
+    left: 0; /* Show sidebar */
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text); /* Default color */
+}
+
+.sidebar-header-link {
+    text-decoration: none;
+    color: inherit; /* Inherit color to avoid hover effect */
+}
+
+.sidebar-header i {
+    font-size: 50px; /* Increase the font size for the icon */
+    color: var(--primary);
+}
+
+.sidebar-header h4 {
+    margin: 0; /* Remove default margin */
+    color: inherit; /* Retain inherited color */
+}
+
+.menu-item {
+    cursor: pointer;
+    margin: 20px 0; /* Increased margin for better spacing */
+    color: var(--text);
+    padding: 10px 15px; /* Added padding for better click area */
+    border-radius: 5px; /* Slightly rounded corners */
+    position: relative; /* For positioning the pseudo-element */
+}
+
+.menu-item:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -15px; /* Extend to the left edge */
+    right: -15px; /* Extend to the right edge */
+    bottom: 0;
+    background-color: var(--secondary); /* Hover background color */
+    z-index: -1; /* Behind the text */
+}
+
+.menu-item.submenu-open:hover::before {
+    background-color: transparent; /* Prevent hover effect when submenu is open */
+}
+
+.menu-item i {
+    color: var(--primary); /* Use --primary for icons */
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.submenu {
+    display: none;
+    padding-left: 20px;
+    margin-top: 10px; /* Add space above submenu */
+}
+
+.submenu.open {
+    display: block;
+}
+
+.submenu-item {
+    cursor: pointer;
+    color: var(--text);
+    padding: 8px 15px; /* Increased padding for submenus */
+    display: flex; /* Align icon and text */
+    align-items: center; /* Center vertically */
+    margin: 5px 0; /* Space between submenu items */
+    z-index: 1; /* Ensure submenu items are on top */
+}
+
+.submenu-item:hover {
+    background-color: var(--secondary); /* Hover effect for submenu items */
+}
+
+.header {
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    margin: 30px 0;
+    color: var(--text);
+}
+
+.section {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px 0;
+    transition: margin-left 0.3s;
+}
+
+.section.expanded {
+    margin-left: 300px; /* Shift content when sidebar is open */
+}
+
+.icon {
+    font-size: 40px;
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.metric {
+    background-color: #e3f2fd;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+a {
+    color: inherit; /* Use the inherited text color */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    color: inherit; /* Keep the inherited text color on hover */
+    text-decoration: none; /* Ensure no underline on hover */
+}
+.floating-tab {
+    position: fixed;
+    right: 40px;
+    top: 50px; /* Adjust based on your taskbar height */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 2000;
+}
+/* Dark theme styles */
+.dark-theme {
+    --dark-text: #e7e8f4; 
+    --dark-background: #080917;
+    --dark-primary: #989ce6;
+    --dark-secondary: #191f8a;
+    --dark-accent: #4750eb;
+}
+
+body.dark-theme {
+    background-color: var(--dark-background);
+    color: var(--text); /* Update text color for dark theme */
+}
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme p {
+    color: var(--dark-text); /* Ensure headings and paragraphs use the dark text color */
+}
+.dark-theme .taskbar {
+    background-color: #1b1e2f; /* Dark theme taskbar color */
+    color: var(--dark-text);
+}
+
+.dark-theme .sidebar {
+    background-color: #1b1e2f; /* A suitable dark color */
+}
+
+.dark-theme .sidebar-header {
+    color: var(--dark-text); /* Change sidebar header text color */
+}
+
+.dark-theme .sidebar-header-link {
+    color: var(--dark-text); /* Ensure link retains dark text color */
+}
+
+.dark-theme .taskbar-icon,
+.dark-theme .sidebar-header i,
+.dark-theme .menu-item i,
+.dark-theme .submenu-item i {
+    color: var(--dark-primary);
+}
+
+.dark-theme .menu-item,
+.dark-theme .submenu-item {
+    color: var(--dark-text);
+}
+
+.dark-theme .menu-item:hover,
+.dark-theme .submenu-item:hover {
+    background-color: var(--dark-secondary); /* Update hover color for dark theme */
+}
+
+.dark-theme .header {
+    color: var(--dark-text);
+}
+.dark-theme .menu-item:hover::before {
+    background-color: var(--dark-secondary); /* Use dark secondary color */
+    z-index: -1; /* Ensure it's behind the text */
+}
+
+.dark-theme .menu-item.submenu-open:hover::before {
+    background-color: transparent; /* Prevent hover effect when submenu is open */
+}
+
+/* Ensure the section class retains original styles */
+.section {
+    background-color: #fff; /* Keep it light in sections */
+}
+.dark-theme .section h2 {
+	color: var(--text);
+}
+/* Responsive styles */
+@media (max-width: 768px) {
+    .taskbar {
+        padding: 10px;
+    }
+
+    .taskbar-icon {
+        margin: 0 10px; /* Smaller margins */
+    }
+
+    .sidebar {
+        width: 75%; /* 75% width on mobile */
+        left: -75%; /* Hide off-screen */
+    }
+
+    .sidebar.open {
+        left: 0; /* Show sidebar */
+    }
+
+    .section {
+        margin: 10px 0; /* Adjust margins for smaller screens */
+    }
+
+    .header {
+        font-size: 24px; /* Smaller font for mobile */
+    }
+
+    .icon {
+        font-size: 30px; /* Smaller icon size for mobile */
+    }
+
+    /* Ensure icons in taskbar do not move */
+    .taskbar {
+        justify-content: space-between; /* Keep icons fixed in position */
+    }
+	.floating-tab {
+        right: 10px; /* Closer to the edge on mobile */
+        top: 60px; /* Adjust based on your taskbar height */
+        width: auto; /* Adjust width if needed */
+    }
+}
