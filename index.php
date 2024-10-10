@@ -109,8 +109,7 @@ if ($result->num_rows > 0) {
             </div>
         </a>
         <div class="submenu" id="reportMenu">
-            <div class="submenu-item" onclick="location.href='report.html'"><i class="fas fa-user-clock"></i>Consultation Reports</div>
-            <div class="submenu-item" onclick="location.href='analytics.html'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
+            <div class="submenu-item" onclick="location.href='reports.php'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
         </div>
     </div>
 </div>

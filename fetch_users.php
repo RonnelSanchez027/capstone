@@ -12,8 +12,33 @@ if ($conn->connect_error) {
 }
 echo "Connected successfully<br>";
 
-// Fetch users from the users table
-$sql = "SELECT id, username, email FROM users";
+// Step 1: Sync new users from the users table to modified_users
+$sync_sql = "
+    INSERT INTO modified_users (username, email)
+    SELECT username, email FROM users
+    WHERE NOT EXISTS (
+        SELECT 1 FROM modified_users WHERE modified_users.username = users.username
+    )
+";
+
+if ($conn->query($sync_sql) === FALSE) {
+    die("Error syncing users: " . $conn->error);
+}
+
+// Step 2: Cleanup deleted users in modified_users
+$cleanup_sql = "
+    DELETE FROM modified_users
+    WHERE username NOT IN (
+        SELECT username FROM users
+    )
+";
+
+if ($conn->query($cleanup_sql) === FALSE) {
+    die("Error cleaning up modified_users: " . $conn->error);
+}
+
+// Step 3: Fetch users to display or further process
+$sql = "SELECT * FROM modified_users";
 $result = $conn->query($sql);
 
 if ($result === FALSE) {
@@ -21,22 +46,12 @@ if ($result === FALSE) {
 }
 
 if ($result->num_rows > 0) {
-    // Clear existing data in modified_users
-    $conn->query("TRUNCATE TABLE modified_users"); 
-
+    // Display the results or process them further
     while ($row = $result->fetch_assoc()) {
-        $insert_sql = "INSERT INTO modified_users (id, username, email, full_name) VALUES (" . 
-                      $row['id'] . ", '" . 
-                      $row['username'] . "', '" . 
-                      $row['email'] . "', NULL)"; 
-
-        if ($conn->query($insert_sql) === FALSE) {
-            die("Error inserting user: " . $conn->error);
-        }
+        echo "Username: " . $row['username'] . ", Email: " . $row['email'] . "<br>";
     }
-    echo "Users fetched and added to modified_users table!";
 } else {
-    echo "No users found in the users table.";
+    echo "No users found in the modified_users table.";
 }
 
 $conn->close();

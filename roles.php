@@ -83,6 +83,17 @@ if ($result === FALSE) {
         .form-row {
             margin-bottom: 15px;
         }
+        @media (max-width: 480px) {
+        .table {
+            font-size: 12px; /* Further reduce font size for very small screens */
+        }
+        .table th, .table td {
+            padding: 8px; /* Further reduce padding for better fit */
+        }
+        .container {
+            overflow-x: auto; /* Ensure horizontal scrolling */
+        }
+    }
     </style>
 </head>
 <body>
@@ -152,8 +163,7 @@ if ($result === FALSE) {
             </div>
         </a>
         <div class="submenu" id="reportMenu">
-            <div class="submenu-item" onclick="location.href='report.html'"><i class="fas fa-user-clock"></i>Consultation Reports</div>
-            <div class="submenu-item" onclick="location.href='analytics.html'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
+            <div class="submenu-item" onclick="location.href='reports.php'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
         </div>
     </div>
 </div>

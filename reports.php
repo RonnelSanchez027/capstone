@@ -1,34 +1,8 @@
 <?php
-// Database connection
-$servername = "localhost:3307";
-$username = "root";
-$password = "";
-$dbname = "admin_db";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Fetch appointments and their comments
-$sql = "
-    SELECT a.id, a.category, a.subcategory, a.details, c.comment, c.created_at 
-    FROM appointment a
-    LEFT JOIN comments c ON a.id = c.appointment_id
-";
-$result = $conn->query($sql);
-$appointments = [];
-
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $appointments[] = $row;
-    }
-} else {
-    // Handle case where no appointments are found
-    echo "No appointments found.";
-}
-$conn->close();
+include 'fetch_data.php';
+$data = fetchAnalyticsData(); // Fetch data using the updated function
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,27 +13,19 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
-    <title>Public Consultation Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Analytics Dashboard</title>
     <style>
-        .dark-theme .table td, .dark-mode .table th {
-        color: #e7e8f4; /* Change text color to white */
-        }
-        #search {
-            max-width: 30%; /* Set the width to 30% for desktop */
-        }
-        .table-responsive {
-            max-width: 100%; /* Adjust to your preference */
-            overflow-x: auto; /* Allows horizontal scrolling */
-        }
-        @media (max-width: 768px) {
-            #search {
-                max-width: 80%; /* Set the width to 80% for mobile */
-            }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80%;
+            margin-bottom: 40px;
         }
     </style>
 </head>
 <body>
-
 <div class="taskbar">
     <i class="fas fa-bars taskbar-icon" id="toggleSidebar"></i>
     <div class="ml-auto">
@@ -71,7 +37,7 @@ $conn->close();
 </div>
 
 <div id="floatingTab" class="floating-tab" style="display: none;">
-    <a href="login.html" onclick="logout()">Log Out</a>
+    <a href="#" onclick="logout()">Log Out</a>
 </div>
 
 
@@ -131,55 +97,123 @@ $conn->close();
     </div>
 </div>
 
-<div class="container mt-5">
-    <h2>Consultation Records</h2>
-    <div class="input-group mb-3" id="searchContainer">
-        <input type="text" id="search" class="form-control" placeholder="Search for appointments...">
-        <div class="input-group-append">
-            <button id="searchButton" class="btn btn-outline-secondary" type="button">
-                <i class="fas fa-search"></i>
-            </button>
+<div class="container">
+    <h1 class="text-center">Public Consultation Analytics Dashboard</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Users Overview</h3>
+            <div class="chart-container">
+                <canvas id="userChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Total Appointments</h3>
+            <div class="chart-container">
+                <canvas id="appointmentChart"></canvas>
+            </div>
         </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-bordered mt-3" id="appointmentsTable">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Category</th>
-                    <th>Subcategory</th>
-                    <th>Details</th>
-                    <th>Comment</th>
-                    <th>Created At</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($appointments as $appointment): ?>
-                    <tr>
-                        <td class="hec"><?php echo htmlspecialchars($appointment['category']); ?></td>
-                        <td><?php echo htmlspecialchars($appointment['subcategory']); ?></td>
-                        <td><?php echo htmlspecialchars($appointment['details']); ?></td>
-                        <td><?php echo htmlspecialchars($appointment['comment'] ?: 'No comments'); ?></td>
-                        <td><?php echo htmlspecialchars($appointment['created_at'] ?: 'N/A'); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Total Comments (Answered Appointments)</h3>
+            <div class="chart-container">
+                <canvas id="commentsChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Scheduled Events (Monthly)</h3>
+            <div class="chart-container">
+                <canvas id="scheduleChart"></canvas>
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="script.js"></script> <!-- Link to JS -->
 <script>
-$(document).ready(function() {
-    // Search functionality
-    $('#search').on('input', function() {
-        const query = $(this).val().toLowerCase();
-        $('#appointmentsTable tbody tr').filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
-        });
+    const usernames = <?php echo json_encode($data['usernames']); ?>;
+    const appointmentCount = <?php echo $data['appointmentCount']; ?>;
+    const commentsCount = <?php echo $data['commentsCount']; ?>;
+    const scheduleMonths = <?php echo json_encode($data['scheduleMonths']); ?>;
+    const scheduleCounts = <?php echo json_encode($data['scheduleCounts']); ?>;
+
+    // User Chart
+    const ctxUser = document.getElementById('userChart').getContext('2d');
+    const userChart = new Chart(ctxUser, {
+        type: 'bar', // Bar chart for individual users
+        data: {
+            labels: usernames,
+            datasets: [{
+                label: 'Users',
+                data: Array(usernames.length).fill(1), // Each user has a count of 1
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'User Count'
+                    }
+                }
+            }
+        }
     });
+
+    // Appointment Chart
+    const ctxAppointment = document.getElementById('appointmentChart').getContext('2d');
+    const appointmentChart = new Chart(ctxAppointment, {
+        type: 'bar', // Bar chart for appointments
+        data: {
+            labels: ['Total Appointments'],
+            datasets: [{
+                label: 'Appointments',
+                data: [appointmentCount],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+            }]
+        }
+    });
+
+    // Comments Chart
+    const ctxComments = document.getElementById('commentsChart').getContext('2d');
+    const commentsChart = new Chart(ctxComments, {
+        type: 'pie', // Pie chart for comments
+        data: {
+            labels: ['Answered Comments'],
+            datasets: [{
+                data: [commentsCount],
+                backgroundColor: ['rgba(255, 159, 64, 0.6)'],
+            }]
+        }
+    });
+
+    // Schedule Chart (Changed to Doughnut Chart)
+const ctxSchedule = document.getElementById('scheduleChart').getContext('2d');
+const scheduleChart = new Chart(ctxSchedule, {
+    type: 'doughnut', // Change to doughnut chart
+    data: {
+        labels: scheduleMonths,
+        datasets: [{
+            label: 'Scheduled Events',
+            data: scheduleCounts,
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+            ],
+        }]
+    }
 });
 </script>
 </body>
