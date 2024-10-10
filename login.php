@@ -1,7 +1,15 @@
 <?php
 session_start();
-include 'db.php'; // Ensure this path is correct
+include 'db.php'; // Include database connection
 
+// Check if the signup was successful
+$signup_success = isset($_SESSION['signup_success']) ? $_SESSION['signup_success'] : false;
+if ($signup_success) {
+    // Clear the session variable
+    unset($_SESSION['signup_success']);
+}
+
+// Process login
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if both username and password are provided
     if (empty($_POST['username']) || empty($_POST['password'])) {

@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start the session
 include 'db.php'; // Include database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,8 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("sss", $username, $hashed_password, $email);
 
     if ($stmt->execute()) {
+        // Set a session variable to indicate successful signup
+        $_SESSION['signup_success'] = true; 
         // Redirect to login page after successful registration
-        header("Location: login.html");
+        header("Location: login.html"); // Change to login.php if you're using PHP
         exit();
     } else {
         echo "Error: " . $stmt->error;
