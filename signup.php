@@ -118,83 +118,70 @@ $conn->close();
 
 <!-- Modal for Terms and Conditions -->
 <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <h5 class="modal-title" id="termsModalLabel" style="text-align:center">Terms of Service and Privacy Policy</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body" style="max-height: 300px; overflow-y: auto;">
-                <h1>Terms and Conditions for Public Consultation from Philippines</h1>
-<p><strong>Effective Date:</strong> [Insert Date]</p>
+            <h4><strong>Terms of Service</strong></h4>
 
-<p>Welcome to the Public Consultation from Philippines webpage. By accessing or participating in our consultations, you agree to comply with and be bound by the following terms and conditions.</p>
+<p><strong>Acceptance of Terms</strong></p>
+<p>By using this public consultation website, you agree to these Terms of Service. If you do not agree, please do not use the site.</p>
 
-<h2>1. Purpose of Consultation</h2>
-<p>The Public Consultation platform aims to gather input from citizens regarding local government initiatives, policies, and projects. We encourage active participation to ensure that community voices are heard and considered in decision-making processes.</p>
+<p><strong>Purpose of the Website</strong></p>
+<p>This website is designed to facilitate community engagement by allowing users to provide feedback on local government initiatives, policies, and programs.</p>
 
-<h2>2. Participation</h2>
-<ul>
-    <li><strong>Eligibility:</strong> Participation is open to all residents of the Local Government Unit (LGU) and stakeholders who are directly affected by the issues being consulted.</li>
-    <li><strong>Methods of Participation:</strong> Residents can participate through various means, including:
-        <ul>
-            <li>Online surveys</li>
-            <li>Public forums and meetings (both virtual and in-person)</li>
-            <li>Submission of written comments via email or our webpage</li>
-        </ul>
-    </li>
-    <li><strong>Registration:</strong> Some consultations may require prior registration. Participants will be informed accordingly.</li>
-</ul>
+<p><strong>User Accounts</strong></p>
+<p>You may need to create an account to participate in certain consultations. You are responsible for maintaining the confidentiality of your account details and for all activities that occur under your account.</p>
 
-<h2>3. Conduct of Participants</h2>
-<p>Participants are expected to:</p>
-<ul>
-    <li>Engage respectfully and constructively.</li>
-    <li>Refrain from using offensive language or making personal attacks.</li>
-    <li>Stay on topic and provide relevant feedback.</li>
-</ul>
+<p><strong>Public Contributions</strong></p>
+<p>By submitting comments or feedback, you grant the local government the right to use and publish your contributions. Please ensure your submissions are respectful and relevant.</p>
 
-<h2>4. Data Privacy</h2>
-<p>Any personal information collected during consultations will be handled in accordance with applicable data protection laws. Participant information will be used solely for the purpose of consultation and will not be shared with third parties without consent.</p>
+<p><strong>User Conduct</strong></p>
+<p>You agree to engage in constructive discussions and refrain from harassment, hate speech, or disruptive behavior. Violations may result in removal from the site.</p>
 
-<h2>5. Feedback Collection</h2>
-<p>Feedback will be collected through the methods specified in each consultation notice. Participants are encouraged to provide honest and constructive feedback, which will be reviewed by LGU officials and considered in the decision-making process.</p>
+<p><strong>Limitation of Liability</strong></p>
+<p>The local government is not liable for any damages resulting from your use of this website or reliance on its content.</p>
 
-<h2>6. Duration of Consultation</h2>
-<p>Each consultation will have a specified duration, which will be communicated in the consultation notice. Extensions may be granted at the discretion of the LGU, and participants will be informed of any changes.</p>
+<h4><strong>Privacy Policy</strong></h4>
 
-<h2>7. Intellectual Property</h2>
-<p>All materials shared during consultations, including surveys, presentations, and other resources, are the property of the LGU. Participants are not permitted to reproduce or distribute these materials without permission.</p>
+<p><strong>Commitment to Privacy</strong></p>
+<p>We are committed to protecting your privacy. This policy outlines how we collect, use, and protect your personal information.</p>
 
-<h2>8. Limitation of Liability</h2>
-<p>The LGU is not responsible for any issues arising from participation in the consultations, including but not limited to technical difficulties, errors in feedback collection, or misinterpretation of participant responses.</p>
+<p><strong>Data Collection</strong></p>
+<p>We may collect personal information such as your name and email address when you participate in consultations. We also collect non-personal data like IP addresses for site usage analysis.</p>
 
-<h2>9. Amendments to Terms</h2>
-<p>These terms and conditions may be amended from time to time. Participants will be notified of any changes through the webpage or via email.</p>
+<p><strong>Usage of Data</strong></p>
+<p>Your personal information may be used to communicate with you about consultations and to improve our services. We do not sell your personal data to third parties.</p>
 
-<h2>10. Governing Law</h2>
-<p>These terms and conditions are governed by the laws of the Philippines. Any disputes arising from these terms will be resolved in accordance with applicable laws.</p>
+<p><strong>User Rights</strong></p>
+<p>You have the right to access, correct, or delete your personal information. If you wish to exercise these rights, please contact us through the website.</p>
 
-<h2>11. Contact Information</h2>
-<p>For questions or concerns regarding these terms and conditions, please contact us at [Insert Contact Email/Phone Number].</p>
+<p><strong>Security Measures</strong></p>
+<p>We implement reasonable security measures to protect your information. However, no method of transmission over the internet is completely secure.</p>
+
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex justify-content-between">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="term1">
-                    <label class="form-check-label" for="term1">I agree to Term 1</label>
+                    <label class="form-check-label" for="term1">I acknowledge and agree to all of the following.</label>
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="term2" disabled>
-                    <label class="form-check-label" for="term2">I agree to Term 2</label>
+                    <label class="form-check-label" for="term2">I agree to <b>Terms of Service</b></label>
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="term3" disabled>
-                    <label class="form-check-label" for="term3">I agree to Term 3</label>
+                    <label class="form-check-label" for="term3">I agree to <b>Privacy Policy</b></label>
                 </div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Decline</button>
-                <button type="button" class="btn btn-primary" id="acceptTerms">Accept</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary flex-fill" data-dismiss="modal">Decline</button>
+                <button type="button" class="btn btn-primary flex-fill" id="acceptTerms">Accept</button>
             </div>
         </div>
     </div>
@@ -213,6 +200,7 @@ $conn->close();
         // Disable checkboxes initially
         document.getElementById('term2').disabled = true;
         document.getElementById('term3').disabled = true;
+        document.getElementById('term1').disabled = true; // Disable Term 1 initially
 
         // Scroll event listener
         document.querySelector('.modal-body').onscroll = function() {
@@ -222,7 +210,9 @@ $conn->close();
             const clientHeight = modalBody.clientHeight;
 
             // Check if scrolled to the bottom
-            if (scrollTop + clientHeight >= scrollHeight) {
+            if (scrollTop + clientHeight >= scrollHeight - 10) {
+                // Enable Term 1 when scrolled to the bottom
+                document.getElementById('term1').disabled = false;
                 // Enable checkboxes when scrolled to the bottom
                 document.getElementById('term2').disabled = false;
                 document.getElementById('term3').disabled = false;
@@ -233,10 +223,13 @@ $conn->close();
         document.getElementById('term1').onclick = function() {
             const term2 = document.getElementById('term2');
             const term3 = document.getElementById('term3');
-            
-            if (!term2.disabled && !term3.disabled) {
-                term2.checked = this.checked;
-                term3.checked = this.checked;
+
+            if (this.checked) {
+                term2.checked = true;  // Check Term 2
+                term3.checked = true;  // Check Term 3
+            } else {
+                term2.checked = false; // Uncheck Term 2
+                term3.checked = false; // Uncheck Term 3
             }
         };
 
@@ -269,6 +262,7 @@ $conn->close();
         };
     });
 </script>
+
 
 </body>
 </html>
