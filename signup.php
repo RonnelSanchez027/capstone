@@ -1,23 +1,33 @@
 <?php
-session_start(); // Start the session
-include 'db.php'; // Include database connection
+session_start();
+include 'db.php';
 
 // Initialize variables for error messages
 $error_message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Store the submitted data in session for later use
-    $_SESSION['signup_data'] = [
-        'username' => $_POST['username'],
-        'password' => $_POST['password'],
-        'email' => $_POST['email'],
-        'confirm_password' => $_POST['confirm_password']
-    ];
+    // Get password and confirm password from POST request
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
 
-    // Show modal for terms and conditions
-    $_SESSION['show_modal'] = true; // Set a session variable
-    header("Location: signup.php"); // Redirect to the same page
-    exit();
+    // Check if the passwords match
+    if ($password !== $confirm_password) {
+        // If passwords don't match, show an error
+        $error_message = "Passwords do not match!";
+    } else {
+        // Store the submitted data in session for later use
+        $_SESSION['signup_data'] = [
+            'username' => $_POST['username'],
+            'password' => $password,
+            'email' => $_POST['email'],
+            'confirm_password' => $confirm_password
+        ];
+
+        // Show modal for terms and conditions
+        $_SESSION['show_modal'] = true;
+        header("Location: signup.php");
+        exit();
+    }
 }
 
 $conn->close();
@@ -94,6 +104,14 @@ $conn->close();
     <div class="image-section"></div>
     <div class="form-section">
         <h2>Create Account</h2>
+
+        <!-- Display error message if passwords do not match -->
+        <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
+
         <form action="signup.php" method="post">
             <div class="form-group">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -103,9 +121,7 @@ $conn->close();
             </div>
             <div class="form-group position-relative">
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                <span class="toggle-password" toggle="#password">
-                    <i class="fas fa-eye-slash" id="toggle-icon"></i>
-                </span>
+                <span class="toggle-password" toggle="#password"></span>
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" name="confirm_password" placeholder="Confirm Password" required>
@@ -127,9 +143,7 @@ $conn->close();
                 </button>
             </div>
             <div class="modal-body" style="max-height: 300px; overflow-y: auto;">
-            <h4><strong>Terms of Service</strong></h4>
-
-<p><strong>Acceptance of Terms</strong></p>
+            <p><strong>Acceptance of Terms</strong></p>
 <p>By using this public consultation website, you agree to these Terms of Service. If you do not agree, please do not use the site.</p>
 
 <p><strong>Purpose of the Website</strong></p>
@@ -163,7 +177,6 @@ $conn->close();
 
 <p><strong>Security Measures</strong></p>
 <p>We implement reasonable security measures to protect your information. However, no method of transmission over the internet is completely secure.</p>
-
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 <div class="form-check">
@@ -261,8 +274,8 @@ $conn->close();
             }
         };
     });
+    
 </script>
-
 
 </body>
 </html>
