@@ -54,7 +54,7 @@ document.addEventListener('click', (event) => {
 function logout() {
     alert("You have logged out!");
     // Redirect to login page (example)
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
 }
 
 function toggleSubmenu(menuId) {

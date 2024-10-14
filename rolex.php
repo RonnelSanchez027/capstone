@@ -1,59 +1,49 @@
 <?php
-// Database connection
-$conn = new mysqli("localhost:3307", "root", "", "admin_db");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+session_start();
+
+// Check if the user is already logged in
+if (!isset($_SESSION['user_id'])) {
+    // User is not logged in, redirect to login page
+    header("Location: login.php");
+    exit();
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = $_POST['id'] ?? null;
+// At this point, the user is logged in
+// You can retrieve user information based on the user_id stored in the session
+require 'db.php'; // Make sure to include your database connection file
 
-    if (isset($_POST['update']) && $id) {
-        // Update logic
-        $full_name = $_POST['full_name'];
-        $job_title = $_POST['job_title'];
-        $role = $_POST['role'];
-        $status = $_POST['status'];
+// Fetch user data using the user_id from session
+$stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
 
-        // Update the record in the database
-        $sql = "UPDATE roles SET full_name='$full_name', job_title='$job_title', role='$role', status='$status' WHERE id=$id";
-        if (!$conn->query($sql)) {
-            die("Update failed: " . $conn->error);
-        }
-    } elseif (isset($_POST['submit'])) {
-        // Insert logic
-        $full_name = $_POST['full_name'];
-        $job_title = $_POST['job_title'];
-        $role = $_POST['role'];
-        $status = $_POST['status'];
-
-        // Insert into database
-        $sql = "INSERT INTO roles (full_name, job_title, role, status) VALUES ('$full_name', '$job_title', '$role', '$status')";
-        if (!$conn->query($sql)) {
-            die("Insert failed: " . $conn->error);
-        }
-    }
-
-    // Redirect to the same page to avoid duplicate submission
-    header("Location: rolex.php");
-    exit; 
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $username = $row['username'];
+} else {
+    // If no user found, you may want to log out the user
+    session_destroy();
+    header("Location: login.php");
+    exit();
 }
-// Handle delete request
-if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    $sql = "DELETE FROM roles WHERE id=$id";
-    if (!$conn->query($sql)) {
-        die("Delete failed: " . $conn->error);
-    }
-    // Redirect to avoid refresh issues
-    header("Location: rolex.php");
-    exit;
+
+// Fetch full name from modified_user table
+$stmt = $conn->prepare("SELECT full_name FROM modified_users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($full_name);
+$stmt->fetch();
+$stmt->close();
+
+// Determine the welcome message
+if (!empty($full_name)) {
+    $welcomeMessage = "Welcome, " . htmlspecialchars($full_name) . "!";
+} else {
+    $welcomeMessage = "Welcome, " . htmlspecialchars($username) . "!";
 }
-// Fetch roles from the database
-$sql = "SELECT * FROM roles";
-$result = $conn->query($sql);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -65,19 +55,9 @@ $result = $conn->query($sql);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
     <title>Public Consultation Dashboard</title>
-    <style>
-        .dark-theme label{
-            color: #e7e8f4;
-        }
-        .dark-theme .table td, .dark-mode .table th {
-        color: #e7e8f4; /* Change text color to white */
-        }
-        .form-row {
-            margin-bottom: 15px;
-        }
-    </style>
 </head>
 <body>
+
 <div class="taskbar">
     <i class="fas fa-bars taskbar-icon" id="toggleSidebar"></i>
     <div class="ml-auto">
@@ -89,10 +69,29 @@ $result = $conn->query($sql);
 </div>
 
 <div id="floatingTab" class="floating-tab" style="display: none;">
-    <a href="login.html" onclick="logout()">Log Out</a>
+    <a href="#" data-toggle="modal" data-target="#logoutModal">Log Out</a>
 </div>
 
-
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <a href="index.php" class="sidebar-header-link">
@@ -123,7 +122,6 @@ $result = $conn->query($sql);
         <div class="submenu" id="trackingMenu">
             <div class="submenu-item" onclick="location.href='records.php'"><i class="fas fa-user-clock"></i>Consultation Records</div>
             <div class="submenu-item" onclick="location.href='tracking.php'"><i class="fas fa-user-clock"></i>Status Tracking</div>
-            <div class="submenu-item" onclick="location.href='#client-feedback'"><i class="fas fa-user-clock"></i>Client Feedback</div>
         </div>
     </div>
     <div class="menu-item">
@@ -134,9 +132,7 @@ $result = $conn->query($sql);
             </div>
         </a>
         <div class="submenu" id="userMenu">
-            <div class="submenu-item" onclick="location.href='#user-registration'"><i class="fas fa-user-clock"></i>User Registration</div>
-            <div class="submenu-item" onclick="location.href='rolex.php'"><i class="fas fa-user-clock"></i>Role Assignment</div>
-            <div class="submenu-item" onclick="location.href='#profile-management'"><i class="fas fa-user-clock"></i>Profile Management</div>
+            <div class="submenu-item" onclick="location.href='roles.php'"><i class="fas fa-user-clock"></i>Role Assignment</div>
         </div>
     </div>
     <div class="menu-item">
@@ -147,97 +143,99 @@ $result = $conn->query($sql);
             </div>
         </a>
         <div class="submenu" id="reportMenu">
-            <div class="submenu-item" onclick="location.href='report.html'"><i class="fas fa-user-clock"></i>Consultation Reports</div>
-            <div class="submenu-item" onclick="location.href='analytics.html'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
-            <div class="submenu-item" onclick="location.href='#export-reports'"><i class="fas fa-user-clock"></i>Export & Share Reports</div>
+            <div class="submenu-item" onclick="location.href='reports.php'"><i class="fas fa-user-clock"></i>Analytics Dashboard</div>
         </div>
     </div>
 </div>
 
-<div class="container mt-5">
-    <h2>Role Management</h2>
-
-    <form action="rolex.php" method="POST">
-        <div class="form-row">
-            <div class="form-group col-md-3">
-                <label for="full_name">Full Name:</label>
-                <input type="text" class="form-control" id="full_name" name="full_name" required>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="job_title">Job Title:</label>
-                <input type="text" class="form-control" id="job_title" name="job_title" required>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="role">Role:</label>
-                <select class="form-control" id="role" name="role" required>
-                    <option value="Admin">Admin</option>
-                    <option value="Consultant">Consultant</option>
-                    <option value="User">User</option>
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="status">Status:</label>
-                <select class="form-control" id="status" name="status" required>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
+<h2 class="welcome-message" style="margin: 20px 0; font-size: 40px; text-align: center;">
+    <?php echo $welcomeMessage; ?>
+</h2>
+<div class="container-fluid" id="content">
+    <h1 class="header">Public Consultation Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="section">
+                <h2 class="special-paragraph"><i class="fas fa-calendar-alt icon"></i> Module 1: Consultation Scheduling</h2>
+                <div class="submodule-title">Appointment Booking</div>
+                <div>Online booking form with calendar integration and notifications.</div><br>
+                <div class="submodule-title">Scheduling Management</div>
+                <div>Manage scheduled consultations, rescheduling, and availability.</div><br>
+                <div class="submodule-title">Consultant Availability</div>
+                <div>Update consultant shifts and integrate personal calendars.</div>
             </div>
         </div>
 
-        <input type="hidden" name="id" id="userId">
-        <button type="submit" class="btn btn-primary" name="submit">Save Profile</button>
-        <button type="submit" class="btn btn-secondary" name="update" style="display: none;">Update Profile</button>
-    </form>
+        <div class="col-md-4">
+            <div class="section">
+                <h2><i class="fas fa-chart-line icon"></i> Module 2: Consultation Tracking</h2>
+                <div class="submodule-title">Consultation Records</div>
+                <div>Create records with notes, actions, and document management.</div><br>
+                <div class="submodule-title">Status Tracking</div>
+                <div>Track progress with status updates and follow-ups.</div><br>
+                <div class="submodule-title">Client Feedback</div>
+                <div>Collect and analyze client feedback with reporting features.</div>
+            </div>
+        </div>
 
-    <table class="table table-bordered mt-3">
-        <thead class="thead-dark">
-            <tr>
-                <th>Full Name</th>
-                <th>Job Title</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>
-                            <td>{$row['full_name']}</td>
-                            <td>{$row['job_title']}</td>
-                            <td>{$row['role']}</td>
-                            <td>{$row['status']}</td>
-                            <td>
-                                <button class='btn btn-warning btn-sm' onclick='editUser({$row['id']}, \"{$row['full_name']}\", \"{$row['job_title']}\", \"{$row['role']}\", \"{$row['status']}\")'><i class='fas fa-edit'></i></button>
-                                <a href='rolex.php?delete={$row['id']}' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure you want to delete?\");'><i class='fas fa-trash'></i></a>
-                            </td>
-                        </tr>";
-                }
-            } else {
-                echo "<tr><td colspan='5'>No profiles found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+        <div class="col-md-4">
+            <div class="section">
+                <h2><i class="fas fa-user-friends icon"></i> Module 3: User Management</h2>
+                <div class="submodule-title">User Registration</div>
+                <div>Sign-up, authentication, and password recovery.</div><br>
+                <div class="submodule-title">Role Assignment</div>
+                <div>Define roles and manage access control.</div><br>
+                <div class="submodule-title">Profile Management</div>
+                <div>Update personal information and preferences.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="section">
+                <h2><i class="fas fa-file-alt icon"></i> Module 4: Reporting & Analytics</h2>
+                <div class="submodule-title">Consultation Reports</div>
+                <div>Generate customizable reports based on various parameters.</div><br>
+                <div class="submodule-title">Analytics Dashboard</div>
+                <div>Visualize data with charts and key performance indicators.</div><br>
+                <div class="submodule-title">Export & Share Reports</div>
+                <div>Export reports in multiple formats and share easily.</div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="section">
+                <h2>Dashboard Overview</h2>
+                <div class="metric">
+                    <h5>Total Consultations:</h5>
+                    <span class="text-primary" style="font-size: 30px;">150</span>
+                </div>
+                <div class="metric">
+                    <h5>Feedback Received:</h5>
+                    <span class="text-primary" style="font-size: 30px;">500</span>
+                </div>
+                <div class="metric">
+                    <h5>Upcoming Events:</h5>
+                    <span class="text-primary" style="font-size: 30px;">3</span>
+                </div>
+                <div>Your active participation is vital for community improvement!</div>
+                <div>Don't miss the next consultation meeting on Nov 15, 2024!</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="script.js"></script> <!-- Link to JS -->
 <script>
-function editUser(id, fullName, jobTitle, role, status) {
-    document.getElementById('userId').value = id;
-    document.getElementById('full_name').value = fullName;
-    document.getElementById('job_title').value = jobTitle;
-    document.getElementById('role').value = role;
-    document.getElementById('status').value = status;
-
-    // Show update button and hide save button
-    document.querySelector('button[name="submit"]').style.display = 'none';
-    document.querySelector('button[name="update"]').style.display = 'inline-block';
-}
+    document.getElementById('confirmLogout').addEventListener('click', function () {
+        // Redirect to logout.php to handle session destruction
+        window.location.href = 'login.php';
+    });
 </script>
 </body>
 </html>

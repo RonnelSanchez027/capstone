@@ -4,7 +4,7 @@ session_start();
 // Check if the user is already logged in
 if (!isset($_SESSION['user_id'])) {
     // User is not logged in, redirect to login page
-    header("Location: login.html");
+    header("Location: login.php");
     exit();
 }
 
@@ -13,19 +13,34 @@ if (!isset($_SESSION['user_id'])) {
 require 'db.php'; // Make sure to include your database connection file
 
 // Fetch user data using the user_id from session
-$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    // Now you can use $row to access user data, like $row['username'], $row['email'], etc.
+    $username = $row['username'];
 } else {
     // If no user found, you may want to log out the user
     session_destroy();
-    header("Location: login.html");
+    header("Location: login.php");
     exit();
+}
+
+// Fetch full name from modified_user table
+$stmt = $conn->prepare("SELECT full_name FROM modified_users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($full_name);
+$stmt->fetch();
+$stmt->close();
+
+// Determine the welcome message
+if (!empty($full_name)) {
+    $welcomeMessage = "Welcome, " . htmlspecialchars($full_name) . "!";
+} else {
+    $welcomeMessage = "Welcome, " . htmlspecialchars($username) . "!";
 }
 ?>
 
@@ -54,10 +69,29 @@ if ($result->num_rows > 0) {
 </div>
 
 <div id="floatingTab" class="floating-tab" style="display: none;">
-    <a href="login.html" onclick="logout()">Log Out</a>
+    <a href="#" data-toggle="modal" data-target="#logoutModal">Log Out</a>
 </div>
 
-
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <a href="index.php" class="sidebar-header-link">
@@ -114,6 +148,9 @@ if ($result->num_rows > 0) {
     </div>
 </div>
 
+<h2 class="welcome-message" style="margin: 20px 0; font-size: 40px; text-align: center;">
+    <?php echo $welcomeMessage; ?>
+</h2>
 <div class="container-fluid" id="content">
     <h1 class="header">Public Consultation Dashboard</h1>
     
@@ -194,5 +231,11 @@ if ($result->num_rows > 0) {
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="script.js"></script> <!-- Link to JS -->
+<script>
+    document.getElementById('confirmLogout').addEventListener('click', function () {
+        // Redirect to logout.php to handle session destruction
+        window.location.href = 'login.php';
+    });
+</script>
 </body>
 </html>

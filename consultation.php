@@ -129,7 +129,28 @@ $appointmentsResult = mysqli_query($connection, $appointmentsQuery);
 </div>
 
 <div id="floatingTab" class="floating-tab" style="display: none;">
-    <a href="#" onclick="logout()">Log Out</a>
+    <a href="#" data-toggle="modal" data-target="#logoutModal">Log Out</a>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -306,6 +327,11 @@ $appointmentsResult = mysqli_query($connection, $appointmentsQuery);
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="script.js"></script> <!-- Link to JS -->
-
-    </body>
+<script>
+    document.getElementById('confirmLogout').addEventListener('click', function () {
+        // Redirect to logout.php to handle session destruction
+        window.location.href = 'login.php';
+    });
+</script>
+</body>
 </html>
