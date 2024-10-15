@@ -157,7 +157,7 @@ function checkPasswordStrength($password) {
             <button type="submit" class="btn btn-primary btn-block mt-3">Sign Up</button>
         </form>
         
-        <p class="mt-3">Already have an account? <a href="login.html">Login here</a></p>
+        <p class="mt-3">Already have an account? <a href="login.php">Login here</a></p>
     </div>
 </div>
 
@@ -171,6 +171,7 @@ function checkPasswordStrength($password) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <div id="error-message" class="error" style="display:none; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.25rem;"></div>
             <div class="modal-body" style="max-height: 300px; overflow-y: auto;">
             <p><strong>Acceptance of Terms</strong></p>
 <p>By using this public consultation website, you agree to these Terms of Service. If you do not agree, please do not use the site.</p>
@@ -297,7 +298,6 @@ function checkPasswordStrength($password) {
 
         checkAll.addEventListener('change', function() {
             checkboxes.forEach(checkbox => checkbox.checked = this.checked);
-            document.getElementById('acceptTerms').disabled = !this.checked; // Disable accept button if not checked
         });
 
         checkboxes.forEach(checkbox => {
@@ -305,22 +305,39 @@ function checkPasswordStrength($password) {
                 if (this.checked === false) {
                     checkAll.checked = false;
                 }
-                // Enable Accept button if all are checked
-                const allChecked = checkboxes.every(chk => chk.checked);
-                document.getElementById('acceptTerms').disabled = !allChecked;
             });
         });
 
         // Proceed button logic
         document.getElementById('proceedBtn').onclick = function() {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.style.display = 'none'; // Hide error message initially
+
+            const allChecked = checkboxes.every(checkbox => checkbox.checked);
+            if (!allChecked) {
+                errorMessageDiv.innerText = "You must agree to all terms and conditions.";
+                errorMessageDiv.style.display = 'block'; // Show error message
+                return; // Stop the process
+            }
+
             $('#mediumPasswordModal').modal('hide');
             $('#termsModal').modal('show'); // Show terms modal again
         };
 
         // Accept button logic
         document.getElementById('acceptTerms').onclick = function() {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.style.display = 'none'; // Hide error message
+
+            const allChecked = checkboxes.every(checkbox => checkbox.checked);
+            if (!allChecked) {
+                errorMessageDiv.innerText = "You must agree to all terms and conditions.";
+                errorMessageDiv.style.display = 'block'; // Show error message
+                return; // Stop the process
+            }
+
             const formData = new FormData(document.getElementById('signupForm'));
-            fetch('save_saving.php', {
+            fetch('save_signup.php', {
                 method: 'POST',
                 body: formData
             }).then(response => {
@@ -333,6 +350,7 @@ function checkPasswordStrength($password) {
         };
     });
 </script>
+
 
 </body>
 </html>
